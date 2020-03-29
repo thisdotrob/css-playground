@@ -1,5 +1,6 @@
 (ns css-playground.core
   (:require [ring.util.response :refer [not-found]]
+            [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]))
 
@@ -14,3 +15,5 @@
       (wrap-resource "public")
       (wrap-content-type)))
 
+(defn -main [& args]
+  (run-jetty app {:port 3000}))
