@@ -5,6 +5,36 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]))
 
+(def data
+  (map (fn [n]
+         {:activity (str "Activity " n)
+          :2020-03-31 0
+          :2020-03-30 (+ 1 n)
+          :2020-03-29 (+ 7 n)})
+       (range 0 100)))
+
+(defn activity-onclick [{:keys [activity]}]
+  #(println "You clicked" activity))
+
+(defn date-onclick [date-key {:keys [activity] :as m}]
+  (let [current-val (date-key m)]
+    #(println "You clicked" date-key current-val)))
+
+(defn scrollable-table []
+  [:div
+   [:div.row
+    [:div.col.s3 "Activity"]
+    [:div.col.s3 "29/03/2020"]
+    [:div.col.s3 "Today"]
+    [:div.col.s3 "31/03/2020"]]
+   [:div.row {:style "background-color: lightseagreen; overflow: scroll; height: 200px;"}
+    (for [val (mapcat (juxt :activity
+                            :2020-03-29
+                            :2020-03-30
+                            :2020-03-31)
+                      data)]
+       [:div.col.s3 {:onclick "console.log('clicky click')"} val])]])
+
 (defn materialize-hiccup-page []
   "head elem based on https://materializecss.com/templates/parallax-template/preview.html"
   (html5
@@ -28,7 +58,8 @@
       [:div.col.s12.m8.l6.offset-l2 {:style "background-color: deeppink;"}
        [:h1 "Biiiiiiiiiiish!!!"]]
       [:div.col.s2.offset-s5.m2.l2 {:style "background-color: gold;"}
-       [:h3 "!"]]]]
+       [:h3 "!"]]]
+     (scrollable-table)]
     (include-js "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js")]))
 
 (defn handler [request]
